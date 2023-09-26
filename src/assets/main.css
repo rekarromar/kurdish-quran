@@ -10,12 +10,12 @@
 @font-face {
     font-family: "quran";
     src: url("../fonts/UthmanicHafs_v2-1.ttf");
-    font-display: block;
+
 }
 @font-face {
     font-family: "surahname";
     src: url("../fonts/sura_names.ttf");
-    font-display: block;
+
 }
 
 
