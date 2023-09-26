@@ -5,12 +5,14 @@ module.exports = {
     extend: {
       fontFamily: {
         rabar21: ["rabar21", "mono"],
+        quran: ["quran", "mono"],
+        surahname: ["surahname", "mono"],
       },
       colors: {
         sixty: "#ffffff",
-        fify: "#e5e5e5",
-        forty: "#606c38",
-        thirty: "#e9edc9",
+        fify: "#B7B7A4",
+        forty: "#DDBEA9",
+        thirty: "#cb997e",
       },
     },
   },

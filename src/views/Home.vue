@@ -1,32 +1,67 @@
 <script setup>
-import { MagnifyingGlassIcon } from "@heroicons/vue/24/solid";
+import { MagnifyingGlassIcon, StopIcon } from "@heroicons/vue/24/solid";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import { QuranStore } from "../stores/quran";
 
 const { searchQuran } = QuranStore();
 const { filteredQuran } = storeToRefs(QuranStore());
 
 const search = ref("");
+const isIndex = ref(null);
+
+const router = useRouter();
+
+function toSurah(index) {
+  router.push({
+    name: "surah",
+    params: { index: index },
+  });
+}
+
+const loading = ref(true);
+
+onMounted(() => {
+  setTimeout(() => {
+    loading.value = false;
+  }, 800);
+});
 </script>
 
 <template>
-  <div class="flex flex-col items-center p-5 lg:p-10 w-full max-w-6xl">
-    <img src="../assets/images/quran.png" class="w-60 flex justify-center" />
-
+  <div
+    v-if="loading"
+    class="h-screen w-screen flex justify-center items-center"
+  >
+    <StopIcon class="w-10 animate-spin text-thirty" />
+  </div>
+  <div
+    v-show="loading == false"
+    class="flex flex-col gap-y-6 items-center p-5 w-full max-w-7xl"
+  >
     <div
-      class="bg-white rounded-full w-1/2 mt-10 mb-5 px-3 py-1 flex flex-row items-center"
+      class="relative flex flex-col gap-y-6 items-center justify-center bg-thirty p-5 md:p-10 rounded-lg w-full"
     >
-      <div class="bg-forty bg-opacity-50 p-1 rounded-md">
-        <MagnifyingGlassIcon class="text-white w-7" />
-      </div>
-      <input
-        v-model="search"
-        @keyup="searchQuran(search)"
-        type="text"
-        placeholder="گەڕان بۆ سوڕەت"
-        class="w-full flex-1 text-right focus:outline-none px-3 placeholder:text-black placeholder:opacity-75"
+      <img
+        src="../assets/images/quds.jpg"
+        class="w-full h-full absolute inset-0 object-cover opacity-20"
       />
+      <img src="../assets/images/quran.webp" class="w-52 z-0 md:w-60" />
+      <div
+        class="bg-white rounded-full w-full lg:w-1/2 p-1 md:p-2 flex flex-row items-center relative"
+      >
+        <div class="bg-thirty p-1 rounded-full">
+          <MagnifyingGlassIcon class="text-white w-7" />
+        </div>
+        <input
+          v-model="search"
+          @keyup="searchQuran(search)"
+          type="text"
+          placeholder="گەڕان بکە بۆ ناوی سوڕەت"
+          class="w-full flex-1 text-right bg-transparent focus:outline-none px-3"
+        />
+      </div>
     </div>
 
     <div
@@ -34,24 +69,44 @@ const search = ref("");
     >
       <div v-for="surah in filteredQuran" :key="surah">
         <div
-          class="flex flex-row items-center justify-between rounded-md bg-sixty bg-opacity-80 p-2 hover:scale-95 hover:cursor-pointer"
+          @mouseenter="isIndex = surah.index"
+          @mouseleave="isIndex = 0"
+          @click="toSurah(surah.index)"
+          :class="isIndex == surah.index ? 'border-forty' : ''"
+          class="flex flex-row items-center justify-between border-[0.5px] rounded-md bg-sixty bg-opacity-80 p-2 hover:cursor-pointer"
         >
-          <div
-            class="bg-fify bg-opacity-50 flex justify-center items-center h-9 w-9 text-forty rounded-md"
+          <span
+            :class="isIndex == surah.index ? 'text-thirty' : 'text-black'"
+            class="items-center text-black rounded-md font-bold"
           >
             {{ surah.versesNumber }}
-          </div>
-          <div class="text-black flex flex-row items-center gap-x-2">
+          </span>
+          <div class="flex flex-row items-center gap-x-2">
             <div class="flex flex-col items-end">
-              <span>{{ surah.name }}</span>
-              <span class="opacity-50">{{
-                surah.type == "Medinan" ? "مەدینە" : "مەککە"
-              }}</span>
+              <span class="font-bold text-md">{{ surah.name }}</span>
+              <span
+                :class="
+                  isIndex == surah.index
+                    ? 'text-thirty opacity-100'
+                    : 'text-black opacity-50'
+                "
+                class="font-bold text-sm"
+                >{{ surah.type == "Medinan" ? "مەدینە" : "مەککە" }}</span
+              >
             </div>
             <div
-              class="bg-forty bg-opacity-50 flex justify-center items-center h-9 w-9 text-white rounded-md"
+              :class="
+                isIndex == surah.index
+                  ? '-rotate-45 bg-thirty text-white'
+                  : 'rotate-45 bg-forty bg-opacity-25 border-[0.5px] text-black'
+              "
+              class="flex justify-center items-center h-9 w-9 rounded-md transition-all duration-300"
             >
-              {{ surah.index }}
+              <span
+                :class="isIndex == surah.index ? 'rotate-45' : '-rotate-45'"
+                class="font-bold"
+                >{{ surah.index }}</span
+              >
             </div>
           </div>
         </div>
